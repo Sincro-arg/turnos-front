@@ -1,0 +1,115 @@
+<section class="turnos-page">
+
+  <div class="turnos-toolbar">
+    <div>
+      <h1 class="turnos-title">Turnos del día</h1>
+      <p class="turnos-sub">{{ fechaLegible() }}</p>
+    </div>
+    <button class="btn-primary" type="button" (click)="abrirNuevo()">+ Nuevo turno</button>
+  </div>
+
+  @if (cargando()) {
+    <div class="turnos-skeleton">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="skeleton-row"></div>
+      }
+    </div>
+  } @else if (error()) {
+    <div class="estado-error">
+      <p>{{ error() }}</p>
+      <button class="btn-secundario" type="button" (click)="reintentar()">Reintentar</button>
+    </div>
+  } @else if (turnos().length === 0) {
+    <div class="estado-vacio">
+      <p>No hay turnos ese día</p>
+    </div>
+  } @else {
+    <div class="turnos-tabla">
+      <div class="turnos-fila turnos-fila--head">
+        <span>Hora</span>
+        <span>Cliente</span>
+        <span>Teléfono</span>
+        <span>Servicio</span>
+        <span></span>
+      </div>
+      @for (turno of turnos(); track turno.id) {
+        <div class="turnos-fila">
+          <span class="col-hora">{{ turno.hora }}</span>
+          <span class="col-cliente">{{ turno.cliente }}</span>
+          <span class="col-telefono">{{ turno.telefono }}</span>
+          <span class="col-servicio">
+            <span class="chip" [class]="'chip--' + turno.servicio.toLowerCase()">{{ turno.servicio }}</span>
+          </span>
+          <span class="col-acciones">
+            <button class="btn-icono" type="button" title="Editar" (click)="abrirEditar(turno)">✎</button>
+            <button class="btn-icono btn-icono--danger" type="button" title="Cancelar" (click)="pedirCancelar(turno)">✕</button>
+          </span>
+        </div>
+      }
+    </div>
+  }
+
+</section>
+
+@if (mostrarForm()) {
+  <div class="modal-backdrop" (click)="cerrarForm()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h2>{{ turnoEditando() ? 'Editar turno' : 'Nuevo turno' }}</h2>
+
+      <div class="campo">
+        <label for="campoCliente">Cliente *</label>
+        <input id="campoCliente" type="text" [(ngModel)]="form.cliente" />
+      </div>
+
+      <div class="campo">
+        <label for="campoTelefono">Teléfono *</label>
+        <input id="campoTelefono" type="tel" [(ngModel)]="form.telefono" />
+      </div>
+
+      <div class="fila-campos">
+        <div class="campo">
+          <label for="campoServicio">Servicio *</label>
+          <select id="campoServicio" [(ngModel)]="form.servicio">
+            @for (s of servicios; track s) {
+              <option [value]="s">{{ s }}</option>
+            }
+          </select>
+        </div>
+        <div class="campo">
+          <label for="campoFecha">Fecha *</label>
+          <input id="campoFecha" type="date" [(ngModel)]="form.fecha" />
+        </div>
+        <div class="campo">
+          <label for="campoHora">Hora *</label>
+          <input id="campoHora" type="time" [(ngModel)]="form.hora" />
+        </div>
+      </div>
+
+      @if (errorForm()) {
+        <p class="mensaje-error">{{ errorForm() }}</p>
+      }
+
+      <div class="modal-acciones">
+        <button class="btn-secundario" type="button" (click)="cerrarForm()">Cancelar</button>
+        <button class="btn-primary" type="button" [disabled]="!formValido || guardando()" (click)="guardar()">
+          {{ guardando() ? 'Guardando…' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (turnoAConfirmar(); as turno) {
+  <div class="modal-backdrop" (click)="cerrarConfirmacion()">
+    <div class="modal modal--chico" (click)="$event.stopPropagation()">
+      <h2>Cancelar turno</h2>
+      <p>¿Cancelar el turno de <strong>{{ turno.cliente }}</strong> a las {{ turno.hora }}?</p>
+      <div class="modal-acciones">
+        <button class="btn-secundario" type="button" [disabled]="cancelando()" (click)="cerrarConfirmacion()">Volver</button>
+        <button class="btn-peligro" type="button" [disabled]="cancelando()" (click)="confirmarCancelar()">
+          {{ cancelando() ? 'Cancelando…' : 'Sí, cancelar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
