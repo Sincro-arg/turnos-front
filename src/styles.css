@@ -1,0 +1,67 @@
+/* Turnos — paleta y tipografía propias (peluquería/salón de turnos). */
+:root {
+  /* Tipografía */
+  --font-base: 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Marca: violeta cálido como primario, coral como acento */
+  --primary:       #6D4AFF;
+  --primary-soft:  #F1EDFF;
+  --primary-deep:  #4F2FD1;
+  --accent:        #FF6B6B;
+  --accent-soft:   #FFEDED;
+
+  /* Estados */
+  --success:       #1FA97A;
+  --success-soft:  #E6F8F1;
+  --warning:       #E0A400;
+  --warning-soft:  #FFF6E0;
+  --danger:        #E14D4D;
+  --danger-soft:   #FDEBEB;
+
+  /* Neutrales / texto */
+  --ink:           #1F2130;
+  --ink-2:         #565A72;
+  --muted:         #8A8FA3;
+  --line:          #E7E6F0;
+  --bg:            #FAF9FC;
+  --card:          #FFFFFF;
+
+  /* Escala y forma */
+  --radius-sm:     6px;
+  --radius:        10px;
+  --radius-lg:     16px;
+  --shadow-sm:     0 1px 3px rgba(31, 33, 48, .08);
+  --shadow:        0 4px 12px rgba(31, 33, 48, .10);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-base);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0 0 .5em;
+}
+
+a {
+  color: var(--primary);
+}
+
+button {
+  font-family: inherit;
+}
