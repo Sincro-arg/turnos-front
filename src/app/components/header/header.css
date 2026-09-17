@@ -1,0 +1,48 @@
+:host {
+  display: block;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  padding: 0 20px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.app-header__brand {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1412;
+  letter-spacing: -0.01em;
+}
+
+.app-header__fecha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-header__fecha-label {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.app-header__fecha-input {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  color: #1a1412;
+  background: #ffffff;
+}
+
+.app-header__fecha-input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}

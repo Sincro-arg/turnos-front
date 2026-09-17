@@ -1,0 +1,13 @@
+<header class="app-header">
+  <span class="app-header__brand">Turnos</span>
+
+  <label class="app-header__fecha">
+    <span class="app-header__fecha-label">Fecha</span>
+    <input
+      type="date"
+      class="app-header__fecha-input"
+      [value]="fechaSvc.fecha()"
+      (change)="onFechaChange($event)"
+    />
+  </label>
+</header>
