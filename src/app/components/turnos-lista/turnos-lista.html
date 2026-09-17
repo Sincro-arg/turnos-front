@@ -52,18 +52,24 @@
 </section>
 
 @if (mostrarForm()) {
-  <div class="modal-backdrop" (click)="cerrarForm()">
-    <div class="modal" (click)="$event.stopPropagation()">
+  <div class="modal-backdrop" [class.cerrando]="cerrandoForm()" (click)="cerrarForm()">
+    <div class="modal" [class.cerrando]="cerrandoForm()" (click)="$event.stopPropagation()">
       <h2>{{ turnoEditando() ? 'Editar turno' : 'Nuevo turno' }}</h2>
 
       <div class="campo">
         <label for="campoCliente">Cliente *</label>
-        <input id="campoCliente" type="text" [(ngModel)]="form.cliente" />
+        <input id="campoCliente" type="text" [(ngModel)]="form.cliente" [class.campo-invalido]="errorCliente" />
+        @if (errorCliente) {
+          <span class="campo-error">{{ errorCliente }}</span>
+        }
       </div>
 
       <div class="campo">
         <label for="campoTelefono">Teléfono *</label>
-        <input id="campoTelefono" type="tel" [(ngModel)]="form.telefono" />
+        <input id="campoTelefono" type="tel" [(ngModel)]="form.telefono" [class.campo-invalido]="errorTelefono" />
+        @if (errorTelefono) {
+          <span class="campo-error">{{ errorTelefono }}</span>
+        }
       </div>
 
       <div class="fila-campos">
@@ -77,11 +83,17 @@
         </div>
         <div class="campo">
           <label for="campoFecha">Fecha *</label>
-          <input id="campoFecha" type="date" [(ngModel)]="form.fecha" />
+          <input id="campoFecha" type="date" [(ngModel)]="form.fecha" [class.campo-invalido]="errorFecha" />
+          @if (errorFecha) {
+            <span class="campo-error">{{ errorFecha }}</span>
+          }
         </div>
         <div class="campo">
           <label for="campoHora">Hora *</label>
-          <input id="campoHora" type="time" [(ngModel)]="form.hora" />
+          <input id="campoHora" type="time" [(ngModel)]="form.hora" [class.campo-invalido]="errorHora" />
+          @if (errorHora) {
+            <span class="campo-error">{{ errorHora }}</span>
+          }
         </div>
       </div>
 
@@ -91,12 +103,16 @@
 
       <div class="modal-acciones">
         <button class="btn-secundario" type="button" (click)="cerrarForm()">Cancelar</button>
-        <button class="btn-primary" type="button" [disabled]="!formValido || guardando()" (click)="guardar()">
+        <button class="btn-primary" type="button" [disabled]="guardando()" (click)="guardar()">
           {{ guardando() ? 'Guardando…' : 'Guardar' }}
         </button>
       </div>
     </div>
   </div>
+}
+
+@if (toast(); as mensajeToast) {
+  <div class="toast-confirmacion" role="status">{{ mensajeToast }}</div>
 }
 
 @if (turnoAConfirmar(); as turno) {

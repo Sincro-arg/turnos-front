@@ -22,13 +22,18 @@ export class TurnosLista {
   readonly error = signal<string | null>(null);
 
   readonly mostrarForm = signal(false);
+  readonly cerrandoForm = signal(false);
   readonly turnoEditando = signal<TurnoDto | null>(null);
   readonly guardando = signal(false);
   readonly errorForm = signal<string | null>(null);
+  readonly intentoEnviar = signal(false);
   form: TurnoInput = this.formVacio();
 
   readonly turnoAConfirmar = signal<TurnoDto | null>(null);
   readonly cancelando = signal(false);
+
+  readonly toast = signal<string | null>(null);
+  private toastTimeout?: ReturnType<typeof setTimeout>;
 
   constructor() {
     effect(() => {
@@ -70,6 +75,8 @@ export class TurnosLista {
     this.turnoEditando.set(null);
     this.form = this.formVacio();
     this.errorForm.set(null);
+    this.intentoEnviar.set(false);
+    this.cerrandoForm.set(false);
     this.mostrarForm.set(true);
   }
 
@@ -83,19 +90,60 @@ export class TurnosLista {
       hora: turno.hora,
     };
     this.errorForm.set(null);
+    this.intentoEnviar.set(false);
+    this.cerrandoForm.set(false);
     this.mostrarForm.set(true);
   }
 
   cerrarForm(): void {
-    if (this.guardando()) return;
-    this.mostrarForm.set(false);
+    if (this.guardando() || this.cerrandoForm()) return;
+    this.cerrandoForm.set(true);
+    setTimeout(() => {
+      this.mostrarForm.set(false);
+      this.cerrandoForm.set(false);
+    }, 180);
+  }
+
+  private soloDigitos(valor: string): string {
+    return valor.replace(/\D/g, '');
+  }
+
+  get errorCliente(): string | null {
+    if (!this.intentoEnviar()) return null;
+    return this.form.cliente.trim() ? null : 'Ingresá el nombre del cliente';
+  }
+
+  get errorTelefono(): string | null {
+    if (!this.intentoEnviar()) return null;
+    const digitos = this.soloDigitos(this.form.telefono);
+    if (!digitos) return 'Ingresá un teléfono';
+    if (digitos.length < 8) return 'El teléfono debe tener al menos 8 dígitos';
+    return null;
+  }
+
+  get errorFecha(): string | null {
+    if (!this.intentoEnviar()) return null;
+    return this.form.fecha ? null : 'Elegí una fecha';
+  }
+
+  get errorHora(): string | null {
+    if (!this.intentoEnviar()) return null;
+    return this.form.hora ? null : 'Elegí un horario';
   }
 
   get formValido(): boolean {
-    return !!this.form.cliente.trim() && !!this.form.telefono.trim() && !!this.form.fecha && !!this.form.hora;
+    const digitos = this.soloDigitos(this.form.telefono);
+    return !!this.form.cliente.trim() && digitos.length >= 8 && !!this.form.fecha && !!this.form.hora;
+  }
+
+  private mostrarToast(mensaje: string): void {
+    if (this.toastTimeout) clearTimeout(this.toastTimeout);
+    this.toast.set(mensaje);
+    this.toastTimeout = setTimeout(() => this.toast.set(null), 3200);
   }
 
   guardar(): void {
+    this.intentoEnviar.set(true);
     if (!this.formValido || this.guardando()) return;
     this.guardando.set(true);
     this.errorForm.set(null);
@@ -111,7 +159,8 @@ export class TurnosLista {
     req.subscribe(res => {
       this.guardando.set(false);
       if (res.ok) {
-        this.mostrarForm.set(false);
+        this.cerrarForm();
+        this.mostrarToast(editando ? 'Turno actualizado' : 'Turno creado');
         this.cargar(this.fechaSvc.fecha());
       } else {
         this.errorForm.set(res.error);
